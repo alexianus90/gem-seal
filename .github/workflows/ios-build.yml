@@ -1,0 +1,21 @@
+name: iOS build
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile for iPhone
+        run: |
+          xcodebuild -version
+          xcodebuild -project GemSeal.xcodeproj -scheme GemSeal \
+            -configuration Release -destination 'generic/platform=iOS' \
+            CODE_SIGNING_ALLOWED=NO build
