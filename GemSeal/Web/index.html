@@ -177,6 +177,7 @@ body:has(#game:not([hidden])) main{
 #game .tools{margin-top:10px}
 #undo{min-width:104px;min-height:48px}
 #status{margin-bottom:0}
+#rescueStatus:empty,#moreStatus:empty{display:none}
 </style></head><body><main>
 <section id="home" class="home">
 <img class="logo seal-logo" src="gem-seal-app-icon.png" width="114" height="114" alt="">
@@ -199,10 +200,11 @@ body:has(#game:not([hidden])) main{
 </dialog>
 <dialog id="moreSettings" class="menu-sheet" aria-labelledby="moreTitle">
 <div class="dialog-top"><h2 id="moreTitle">More Settings</h2><button id="backSettings" aria-label="Back to settings">×</button></div>
-<div class="app-info"><img class="logo seal-logo" src="gem-seal-app-icon.png" width="52" height="52" alt=""><div><strong>Gem Seal</strong><small>Web prototype</small></div></div>
-<div class="menu-list"><button data-info="contact">Contact us</button><button data-info="support">Help &amp; support</button><button id="shareGame">Share with friends</button><button data-info="terms">Terms of use</button><button data-info="privacy">Privacy information</button><button data-info="about">About Gem Seal</button><button data-info="adPrivacy">Ad privacy choices</button><button data-info="adReport">Report an ad</button></div>
+<div class="app-info"><img class="logo seal-logo" src="gem-seal-app-icon.png" width="52" height="52" alt=""><div><strong>Gem Seal</strong><small id="appVersion">Puzzle game</small></div></div>
+<div class="menu-list"><button data-info="contact">Contact us</button><button data-info="support">Help &amp; support</button><button id="shareGame">Share with friends</button><button data-info="terms">Terms of use</button><button data-info="privacy">Privacy policy</button><button data-info="about">About Gem Seal</button><button data-info="adPrivacy">Ad privacy choices</button><button data-info="adReport">Report an ad</button></div>
+<p id="moreStatus" class="menu-note" role="status"></p>
 </dialog>
-<dialog id="info" class="menu-sheet" aria-labelledby="infoTitle"><div class="dialog-top"><h2 id="infoTitle"></h2><button id="backMore" aria-label="Back to More Settings">×</button></div><p id="infoBody"></p><label id="shareField" hidden>Game link <input id="shareLink" readonly></label><button id="copyInfo" class="primary" hidden>Copy link</button><p id="copyStatus" role="status"></p></dialog>
+<dialog id="info" class="menu-sheet" aria-labelledby="infoTitle"><div class="dialog-top"><h2 id="infoTitle"></h2><button id="backMore" aria-label="Back to More Settings">×</button></div><p id="infoBody"></p></dialog>
 <dialog id="roundOver" class="menu-sheet" aria-labelledby="roundTitle">
   <h2 id="roundTitle">Out of moves</h2>
   <p id="roundLevel"></p>
@@ -212,10 +214,10 @@ body:has(#game:not([hidden])) main{
   </dl>
   <div class="menu-actions">
     <button id="rescue" class="primary" autofocus>Watch an ad to rescue</button>
-    <p class="menu-note">Get 3 extra moves on this board · Demo ad</p>
+    <p class="menu-note">Get 3 extra moves on this board</p>
+    <p id="rescueStatus" class="menu-note" role="status"></p>
     <button id="playAgain">Play again <small>Start at level 1</small></button>
     <button id="roundHome">Home</button>
   </div>
 </dialog>
-<dialog id="adDemo"><h2>Rewarded ad preview</h2><p>This simulates an ad. Finish the preview to get 3 moves.</p><button id="adReward" class="primary">Finish preview</button> <button data-close="adDemo">Cancel</button></dialog>
 </main><canvas id="fireworks" aria-hidden="true" hidden></canvas><script src="game.js"></script></body></html>

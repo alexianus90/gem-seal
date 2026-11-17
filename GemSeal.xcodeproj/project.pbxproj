@@ -4,11 +4,11 @@
  classes = {};
  objectVersion = 56;
  objects = {
-  A81000000000000000000001 = {isa = PBXProject; attributes = {LastUpgradeCheck = 2600;}; buildConfigurationList = A8100000000000000000000C; compatibilityVersion = "Xcode 14.0"; developmentRegion = en; knownRegions = (en, Base); mainGroup = A81000000000000000000002; productRefGroup = A81000000000000000000004; projectDirPath = ""; targets = (A81000000000000000000005);};
+  A81000000000000000000001 = {isa = PBXProject; attributes = {LastUpgradeCheck = 2600;}; buildConfigurationList = A8100000000000000000000C; compatibilityVersion = "Xcode 14.0"; developmentRegion = en; knownRegions = (en, Base); mainGroup = A81000000000000000000002; productRefGroup = A81000000000000000000004; projectDirPath = ""; packageReferences = (A81000000000000000000015); targets = (A81000000000000000000005);};
   A81000000000000000000002 = {isa = PBXGroup; children = (A81000000000000000000003, A81000000000000000000004); sourceTree = "<group>";};
   A81000000000000000000003 = {isa = PBXGroup; children = (A81000000000000000000008, A81000000000000000000009, A8100000000000000000000A); path = GemSeal; sourceTree = "<group>";};
   A81000000000000000000004 = {isa = PBXGroup; children = (A8100000000000000000000B); name = Products; sourceTree = "<group>";};
-  A81000000000000000000005 = {isa = PBXNativeTarget; buildConfigurationList = A8100000000000000000000D; buildPhases = (A81000000000000000000006, A81000000000000000000007); buildRules = (); dependencies = (); name = GemSeal; productName = GemSeal; productReference = A8100000000000000000000B; productType = "com.apple.product-type.application";};
+  A81000000000000000000005 = {isa = PBXNativeTarget; buildConfigurationList = A8100000000000000000000D; buildPhases = (A81000000000000000000006, A81000000000000000000007, A81000000000000000000017); packageProductDependencies = (A81000000000000000000016); buildRules = (); dependencies = (); name = GemSeal; productName = GemSeal; productReference = A8100000000000000000000B; productType = "com.apple.product-type.application";};
   A81000000000000000000006 = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (A81000000000000000000012); runOnlyForDeploymentPostprocessing = 0;};
   A81000000000000000000007 = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (A81000000000000000000013, A81000000000000000000014); runOnlyForDeploymentPostprocessing = 0;};
   A81000000000000000000008 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameApp.swift; sourceTree = "<group>";};
@@ -22,6 +22,10 @@
   A81000000000000000000010 = {isa = XCBuildConfiguration; name = Debug; buildSettings = {
    ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon; CODE_SIGN_STYLE = Automatic;
    CURRENT_PROJECT_VERSION = 1; MARKETING_VERSION = 1.0; GENERATE_INFOPLIST_FILE = YES;
+   INFOPLIST_FILE = GemSeal/Info.plist;
+   GEM_SEAL_ADMOB_APP_ID = "ca-app-pub-3940256099942544~1458002511";
+   GEM_SEAL_REWARDED_AD_UNIT_ID = ""; GEM_SEAL_STORE_URL = "";
+   GEM_SEAL_PRIVACY_URL = ""; GEM_SEAL_SUPPORT_URL = "";
    INFOPLIST_KEY_CFBundleDisplayName = "Gem Seal"; INFOPLIST_KEY_UILaunchScreen_Generation = YES;
    INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
    PRODUCT_BUNDLE_IDENTIFIER = com.alexianus.gemseal; PRODUCT_NAME = "$(TARGET_NAME)"; TARGETED_DEVICE_FAMILY = 1;
@@ -29,6 +33,10 @@
   A81000000000000000000011 = {isa = XCBuildConfiguration; name = Release; buildSettings = {
    ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon; CODE_SIGN_STYLE = Automatic;
    CURRENT_PROJECT_VERSION = 1; MARKETING_VERSION = 1.0; GENERATE_INFOPLIST_FILE = YES;
+   INFOPLIST_FILE = GemSeal/Info.plist;
+   GEM_SEAL_ADMOB_APP_ID = "ca-app-pub-3940256099942544~1458002511";
+   GEM_SEAL_REWARDED_AD_UNIT_ID = ""; GEM_SEAL_STORE_URL = "";
+   GEM_SEAL_PRIVACY_URL = ""; GEM_SEAL_SUPPORT_URL = "";
    INFOPLIST_KEY_CFBundleDisplayName = "Gem Seal"; INFOPLIST_KEY_UILaunchScreen_Generation = YES;
    INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
    PRODUCT_BUNDLE_IDENTIFIER = com.alexianus.gemseal; PRODUCT_NAME = "$(TARGET_NAME)"; TARGETED_DEVICE_FAMILY = 1;
@@ -36,6 +44,10 @@
   A81000000000000000000012 = {isa = PBXBuildFile; fileRef = A81000000000000000000008;};
   A81000000000000000000013 = {isa = PBXBuildFile; fileRef = A81000000000000000000009;};
   A81000000000000000000014 = {isa = PBXBuildFile; fileRef = A8100000000000000000000A;};
+  A81000000000000000000015 = {isa = XCRemoteSwiftPackageReference; repositoryURL = "https://github.com/googleads/swift-package-manager-google-mobile-ads.git"; requirement = {kind = exactVersion; version = 12.14.0;};};
+  A81000000000000000000016 = {isa = XCSwiftPackageProductDependency; package = A81000000000000000000015; productName = GoogleMobileAds;};
+  A81000000000000000000017 = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (A81000000000000000000018); runOnlyForDeploymentPostprocessing = 0;};
+  A81000000000000000000018 = {isa = PBXBuildFile; productRef = A81000000000000000000016;};
  };
  rootObject = A81000000000000000000001;
 }

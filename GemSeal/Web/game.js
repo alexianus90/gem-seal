@@ -240,6 +240,7 @@ function settle(line,d){
   el('roundLevel').textContent='Level '+(level+1);
   el('roundGems').textContent=(stages[level].rings.length-left)+' / '+stages[level].rings.length;
   el('roundSwipes').textContent=swipes;
+  el('rescueStatus').textContent='';
   el('roundOver').showModal();
   return;
  }
@@ -510,10 +511,27 @@ undoButton.addEventListener('touchend',event=>{
 el('roundOver').addEventListener('cancel',event=>event.preventDefault());
 el('playAgain').onclick=()=>{el('roundOver').close();openLevel(0)};
 el('roundHome').onclick=()=>{el('roundOver').close();home()};
-el('rescue').onclick=()=>{if(phase==='lost')el('adDemo').showModal()};
-el('adReward').onclick=()=>{
+async function nativeService(command){
+ const bridge=window.webkit?.messageHandlers?.gemSealServices;
+ if(!bridge)return 'unavailable';
+ try{return await bridge.postMessage(command)}catch{return 'unavailable'}
+}
+el('rescue').onclick=async()=>{
+ if(phase!=='lost'||el('rescue').disabled)return;
+ const controls=[el('rescue'),el('playAgain'),el('roundHome')];
+ controls.forEach(button=>button.disabled=true);
+ const status=el('rescueStatus');
+ status.textContent='Loading ad…';
+ const result=await nativeService('rescue');
+ controls.forEach(button=>button.disabled=false);
  if(phase!=='lost')return;
- el('adDemo').close();el('roundOver').close();moves+=3;previous=null;phase='play';el('result').hidden=true;note('Rescued! +3 moves.');sound([523,784]);render();
+ if(result==='earned'){
+  status.textContent='';el('roundOver').close();moves+=3;previous=null;phase='play';
+  el('result').hidden=true;note('Rescued! +3 moves.');sound([523,784]);pulse(25,'success');render();
+ }else{
+  status.textContent=result==='skipped'?'Finish the ad to earn the extra moves.':
+   result==='consent'?'Your current privacy choices prevent an ad request.':'An ad is unavailable right now. You can try again.';
+ }
 };
 el('continue').onclick=()=>openLevel(progress.level);
 el('homeButton').onclick=()=>{el('preferences').close();home()};
@@ -548,30 +566,41 @@ el('settings').onclick=el('playSettings').onclick=openSettings;
 el('sound').onchange=()=>{progress.sound=el('sound').checked;save();if(progress.sound)sound([660])};
 el('vibration').onchange=()=>{progress.vibration=el('vibration').checked;save();pulse(25)};
 el('settingsGuide').onclick=()=>{el('preferences').close();el('guide').showModal();el('guide').addEventListener('close',openSettings,{once:true})};
-el('more').onclick=()=>{el('preferences').close();el('moreSettings').showModal()};
+el('more').onclick=()=>{el('moreStatus').textContent='';el('preferences').close();el('moreSettings').showModal()};
 el('backSettings').onclick=()=>{el('moreSettings').close();openSettings()};
 const info={
- contact:['Contact us','Send your feedback in the chat where you opened the prototype. Include the level number and what happened.'],
- support:['Help & support','Drag along a row or column to shift it. Seal a gem with eight matching tiles. If a gesture behaves unexpectedly, include your device and level number when reporting it.'],
- terms:['Terms of use','Gem Seal is a playable prototype for testing. Puzzle progress and features may change during development.'],
- privacy:['Privacy information','The game saves completed levels and preferences in this browser. The rescue ad is simulated.'],
+ contact:['Contact us','Email info@happyhandsbooks.com with your device, app version and level number.'],
+ support:['Help & support','Drag a row or column and surround a gem with eight matching tiles. Silver-set gems stay fixed. For help with a puzzle or a technical issue, email info@happyhandsbooks.com and include your level number.'],
+ privacy:['Privacy policy','Gem Seal stores progress and settings on your device. The optional ad rescue uses Google AdMob. For privacy questions, email info@happyhandsbooks.com.'],
  about:['About Gem Seal','A sliding puzzle with 100 levels. Wrap rows and columns around the board to close rings and collect gems.'],
- adPrivacy:['Ad privacy choices','This prototype has no live ad network or ad personalisation settings. The rescue preview simulates the reward.'],
- adReport:['Report an ad','The rescue preview does not display a live ad. To report a problem with the preview, use Contact us and include your level number.']
+ adReport:['Report an ad','Email info@happyhandsbooks.com with the approximate time, level number and what appeared in the ad.']
 };
-function showInfo(title,body,sharing=false){
- el('moreSettings').close();el('infoTitle').textContent=title;el('infoBody').textContent=body;
- el('copyStatus').textContent='';el('shareField').hidden=el('copyInfo').hidden=!sharing;el('info').showModal();
+function showInfo(title,body){
+ el('moreSettings').close();el('infoTitle').textContent=title;el('infoBody').textContent=body;el('info').showModal();
 }
-document.querySelectorAll('[data-info]').forEach(b=>b.onclick=()=>showInfo(...info[b.dataset.info]));
+const moreStatus=el('moreStatus');
+document.querySelectorAll('[data-info]').forEach(button=>button.onclick=async()=>{
+ if(button.disabled)return;
+ button.disabled=true;moreStatus.textContent='';
+ const command=button.dataset.info;
+ const result=command==='about'?'unavailable':await nativeService(command);
+ button.disabled=false;
+ if(!el('moreSettings').open||result==='opened')return;
+ if(command==='adPrivacy'){
+  moreStatus.textContent=result==='notRequired'?'No ad privacy form is required in your region.':'Ad privacy choices are currently unavailable.';
+ }else if(command==='terms'){
+  moreStatus.textContent='Terms could not open.';
+ }else{
+  showInfo(...info[command]);
+ }
+});
 el('backMore').onclick=()=>{el('info').close();el('moreSettings').showModal()};
-el('shareGame').onclick=()=>{
- el('shareLink').value='https://slide-seal-mobile-mwf57p1u.alex-747.chatgpt.site';showInfo('Share with friends','Copy the link to send to a friend.',true);
+el('shareGame').onclick=async()=>{
+ if(await nativeService('share')!=='opened'&&el('moreSettings').open){
+  moreStatus.textContent='A public App Store link is unavailable.';
+ }
 };
-el('copyInfo').onclick=async()=>{
- try{await navigator.clipboard.writeText(el('shareLink').value);el('copyStatus').textContent='Link copied.'}
- catch{el('shareLink').select();el('copyStatus').textContent='Select and copy the link.'}
-};
+nativeService('version').then(version=>{if(version!=='unavailable'&&version)el('appVersion').textContent='Version '+version});
 for(const b of document.querySelectorAll('[data-close]'))b.onclick=()=>el(b.dataset.close).close();
 addEventListener('keydown',e=>{const d={ArrowLeft:'l',ArrowRight:'r',ArrowUp:'u',ArrowDown:'d'}[e.key];if(d&&!document.querySelector('dialog[open]')&&!el('game').hidden&&phase==='play'){e.preventDefault();play(d)}});
 home();

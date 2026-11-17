@@ -28,6 +28,11 @@ jobs:
           ASC_KEY_BASE64: ${{ secrets.ASC_KEY_BASE64 }}
           ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
           ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          GEM_SEAL_ADMOB_APP_ID: ${{ vars.GEM_SEAL_ADMOB_APP_ID }}
+          GEM_SEAL_REWARDED_AD_UNIT_ID: ${{ vars.GEM_SEAL_REWARDED_AD_UNIT_ID }}
+          GEM_SEAL_STORE_URL: ${{ vars.GEM_SEAL_STORE_URL }}
+          GEM_SEAL_PRIVACY_URL: ${{ vars.GEM_SEAL_PRIVACY_URL }}
+          GEM_SEAL_SUPPORT_URL: ${{ vars.GEM_SEAL_SUPPORT_URL }}
         shell: bash
         run: |
           set -euo pipefail
@@ -74,12 +79,17 @@ jobs:
           security set-key-partition-list -S apple-tool:,apple: -s -k "$keychain_password" "$keychain" >/dev/null
           security list-keychains -d user -s "$keychain"
 
+          ad_settings=()
+          for name in GEM_SEAL_ADMOB_APP_ID GEM_SEAL_REWARDED_AD_UNIT_ID GEM_SEAL_STORE_URL GEM_SEAL_PRIVACY_URL GEM_SEAL_SUPPORT_URL; do
+            if [[ -n "${!name}" ]]; then ad_settings+=("$name=${!name}"); fi
+          done
+
           xcodebuild -project GemSeal.xcodeproj -scheme GemSeal \
             -configuration Release -destination 'generic/platform=iOS' \
             -archivePath "$work/GemSeal.xcarchive" archive \
             CODE_SIGN_STYLE=Manual DEVELOPMENT_TEAM="$team" \
             CODE_SIGN_IDENTITY="Apple Distribution" PROVISIONING_PROFILE_SPECIFIER="$uuid" \
-            CURRENT_PROJECT_VERSION="$GITHUB_RUN_NUMBER.$GITHUB_RUN_ATTEMPT"
+            CURRENT_PROJECT_VERSION="$GITHUB_RUN_NUMBER.$GITHUB_RUN_ATTEMPT" ${ad_settings[@]+"${ad_settings[@]}"}
 
           cat > "$work/ExportOptions.plist" <<EOF
           <?xml version="1.0" encoding="UTF-8"?>
