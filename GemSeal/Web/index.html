@@ -141,14 +141,8 @@ body{--page-base:#131329;--board-base:#262447;--tile-base:#3b3562;--accent:#bfb1
 .level-grid button small{font-size:10px;color:#f2defb;font-weight:550;white-space:nowrap}
 @media(prefers-reduced-motion:reduce){#sealTrace path{animation:none;stroke-dashoffset:0}}
 
+#undo{touch-action:manipulation}
 .home .seal-logo,.app-info .seal-logo{border-radius:23%;filter:drop-shadow(0 8px 16px #080e24af)}
-.home .seal-logo-slide{animation:logo-slide .45s .28s cubic-bezier(.25,.8,.32,1) both}
-.home .seal-logo-trace{animation:logo-trace .7s .72s ease-out both}
-.home .seal-logo-glint{animation:logo-glint .42s 1.12s ease-in-out both;transform-origin:64px 64px}
-@keyframes logo-slide{from{transform:translateX(0)}to{transform:translateX(-11px)}}
-@keyframes logo-trace{0%{opacity:0;stroke-dasharray:1;stroke-dashoffset:1}13%{opacity:1}72%{stroke-dasharray:1;stroke-dashoffset:0;opacity:1}100%{stroke-dasharray:1;stroke-dashoffset:0;opacity:0}}
-@keyframes logo-glint{0%,100%{opacity:0;transform:scale(.55)}42%{opacity:.95;transform:scale(1.35)}}
-@media(prefers-reduced-motion:reduce){.home .seal-logo-slide,.home .seal-logo-trace,.home .seal-logo-glint{animation:none}}
 #roundOver{text-align:center;padding:clamp(18px,6vw,30px);border-color:#8296c969}
 #roundOver::backdrop{background:#080c19da}
 #roundOver h2{font-size:clamp(25px,7vw,34px);margin:0 0 6px}
@@ -191,7 +185,7 @@ body{--page-base:#131329;--board-base:#262447;--tile-base:#3b3562;--accent:#bfb1
   <use href="#seal-block" x="52" y="24"/>
   <use href="#seal-block" x="80" y="24"/>
   <use href="#seal-block" x="24" y="52"/>
-  <g class="seal-logo-slide"><use href="#seal-block" x="91" y="52"/></g>
+  <use href="#seal-block" x="91" y="52"/>
   <use href="#seal-block" x="24" y="80"/>
   <use href="#seal-block" x="52" y="80"/>
   <use href="#seal-block" x="80" y="80"/>
@@ -200,8 +194,6 @@ body{--page-base:#131329;--board-base:#262447;--tile-base:#3b3562;--accent:#bfb1
   <path d="M64 52 64 64 52 64Z" fill="#fff5cd"/>
   <path d="M64 64 76 64 64 76Z" fill="#d88940"/>
   <path d="m64 64 0 12-12-12Z" fill="#efaa55"/>
-  <path class="seal-logo-trace" d="M92 64V92H36V36H92Z" pathLength="1" fill="none" stroke="#ffe2a0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity="0"/>
-  <path class="seal-logo-glint" d="M64 52 66 62 76 64 66 66 64 76 62 66 52 64 62 62Z" fill="#fffbe5" opacity="0"/>
 </svg>
 <h1>Gem <span>Seal</span></h1><div class="home-progress">Puzzles cleared <strong id="homeCount">0 / 100</strong></div><button id="continue" class="primary"><span aria-hidden="true">▶</span> <span id="playLabel">Play</span></button><div class="home-secondary"><button id="levels">Levels</button><button id="how">How to play</button></div><button id="settings">⚙ Settings</button></section>
 <section id="game" hidden><header class="play-menu"><button id="playSettings" aria-label="Settings">☰</button></header>
