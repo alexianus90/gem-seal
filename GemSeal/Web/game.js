@@ -165,8 +165,14 @@ let progress={level:0,won:[],records:{},sound:true,vibration:true,started:false}
 try{progress={...progress,...JSON.parse(localStorage.getItem('slide-seal-progress')||'{}')}}catch{}
 function save(){try{localStorage.setItem('slide-seal-progress',JSON.stringify(progress))}catch{}}
 let audio;
-function pulse(pattern){
- if(progress.vibration)navigator.vibrate?.(pattern);
+function nativeHaptics(){
+ return window.webkit?.messageHandlers?.gemSealHaptics;
+}
+function pulse(pattern,kind='impact'){
+ if(!progress.vibration)return;
+ const native=nativeHaptics();
+ if(native)native.postMessage(kind);
+ else navigator.vibrate?.(pattern);
 }
 function sound(notes,type='sine',volume=.09,duration=.17){
 
@@ -220,7 +226,7 @@ function play(d,index=selected,animated=false){
    reward.hidden=false;
   }
 
-  sound(bonus?[523,659,784,1047,1319]:[523,784,1047]);pulse(bonus?[22,35,28,35,45]:[22,32,26]);
+  sound(bonus?[523,659,784,1047,1319]:[523,784,1047]);pulse(bonus?[22,35,28,35,45]:[22,32,26],bonus?'success':'impact');
   note((count===1?'Seal! One gem cleared.':count+' gems sealed in one swipe.')+(bonus?' +'+bonus+' moves.':''));
   timer=setTimeout(()=>{board=board.map((v,i)=>cleared.has(i)?'':v);left-=count;moves+=bonus;el('sealReward').hidden=true;settle()},bonus?820:580);
  }else{note('No seal yet. Line up matching pieces around a gem.');settle(line,animated?null:d)}
@@ -230,7 +236,7 @@ function settle(line,d){
  render(line,d);
  if(phase==='play')return;
  if(phase==='lost'){
-  sound([390,290,196]);pulse([45,40,70]);
+  sound([390,290,196]);pulse([45,40,70],'warning');
   el('roundLevel').textContent='Level '+(level+1);
   el('roundGems').textContent=(stages[level].rings.length-left)+' / '+stages[level].rings.length;
   el('roundSwipes').textContent=swipes;
@@ -244,7 +250,7 @@ function settle(line,d){
  }
  const best=progress.records[level];
  progress.records[level]={best:Math.min(best?.best??Infinity,swipes)};
- progress.level=Math.min(level+1,stages.length-1);save();sound([660,880,1047]);pulse([22,45,40]);
+ progress.level=Math.min(level+1,stages.length-1);save();sound([660,880,1047]);pulse([22,45,40],'success');
  el('result').hidden=false;el('title').textContent='Board sealed';
  el('summary').textContent=milestone?milestone+' of '+stages.length+' levels cleared!':
   (level+1)%10===0?'Level '+(level+1)+' sealed!':'Every gem cleared.';
@@ -422,7 +428,7 @@ function createDrag(g){
  });
  const frame=dragLayer.getBoundingClientRect();
  const first=tiles[0].getBoundingClientRect(),adjacent=tiles[g.horizontal?1:N].getBoundingClientRect();
- sound([255],'triangle',.032,.075);pulse(8);
+ sound([255],'triangle',.032,.075);pulse(8,'selection');
  g.pitch=g.horizontal?adjacent.left-first.left:adjacent.top-first.top;
  const line=g.horizontal?Math.floor(g.index/N):g.index%N;
  const indices=movableLine(board,line,g.horizontal);
@@ -463,7 +469,7 @@ grid.onpointermove=e=>{
  }
  g.offset=Math.max(-g.pitch,Math.min(g.pitch,g.horizontal?dx:dy));paintDrag(g,g.offset);
  const armed=Math.abs(g.offset)>=Math.min(24,g.pitch*.38);
- if(armed&&!g.armed){sound([470],'triangle',.027,.06);pulse(8)}
+ if(armed&&!g.armed){sound([470],'triangle',.027,.06);pulse(8,'selection')}
  g.armed=armed;
 };
 function releaseDrag(e,cancelled){
@@ -535,7 +541,7 @@ el('levelPicker').addEventListener('close',()=>{
 el('how').onclick=()=>el('guide').showModal();
 function openSettings(){
  el('sound').checked=progress.sound;el('vibration').checked=progress.vibration;
- el('vibration').disabled=typeof navigator.vibrate!=='function';el('vibrationNote').hidden=!el('vibration').disabled;
+ el('vibration').disabled=!nativeHaptics()&&typeof navigator.vibrate!=='function';el('vibrationNote').hidden=!el('vibration').disabled;
  el('homeButton').hidden=el('game').hidden;el('preferences').showModal();
 }
 el('settings').onclick=el('playSettings').onclick=openSettings;
