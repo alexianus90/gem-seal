@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 import WebKit
 
 @main
@@ -25,12 +26,14 @@ private struct GameView: UIViewRepresentable {
     func makeUIView(context: Context) -> WKWebView {
         let webView = WKWebView()
         webView.navigationDelegate = context.coordinator
+        webView.configuration.userContentController.add(context.coordinator, name: "gemSealHaptics")
         webView.isOpaque = false
         webView.backgroundColor = .clear
         webView.scrollView.backgroundColor = .clear
         webView.scrollView.bounces = false
         webView.scrollView.contentInsetAdjustmentBehavior = .never
         if let page = Bundle.main.url(forResource: "index", withExtension: "html", subdirectory: "Web") {
+            context.coordinator.gameURL = page.standardizedFileURL
             webView.loadFileURL(page, allowingReadAccessTo: page.deletingLastPathComponent())
         } else {
             webView.loadHTMLString("<p>Gem Seal could not load its game files.</p>", baseURL: nil)
@@ -45,8 +48,30 @@ private struct GameView: UIViewRepresentable {
         coordinator.applySafeArea(to: webView)
     }
 
-    final class Coordinator: NSObject, WKNavigationDelegate {
+    static func dismantleUIView(_ webView: WKWebView, coordinator: Coordinator) {
+        webView.configuration.userContentController.removeScriptMessageHandler(forName: "gemSealHaptics")
+    }
+
+    final class Coordinator: NSObject, WKNavigationDelegate, WKScriptMessageHandler {
         var safeArea = EdgeInsets()
+        var gameURL: URL?
+        private let selection = UISelectionFeedbackGenerator()
+        private let impact = UIImpactFeedbackGenerator(style: .soft)
+        private let notification = UINotificationFeedbackGenerator()
+
+        func userContentController(_ controller: WKUserContentController, didReceive message: WKScriptMessage) {
+            guard message.name == "gemSealHaptics", message.frameInfo.isMainFrame,
+                  let gameURL, message.webView?.url?.standardizedFileURL == gameURL,
+                  let kind = message.body as? String else { return }
+
+            switch kind {
+            case "selection": selection.selectionChanged()
+            case "impact": impact.impactOccurred()
+            case "success": notification.notificationOccurred(.success)
+            case "warning": notification.notificationOccurred(.warning)
+            default: break
+            }
+        }
 
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
             applySafeArea(to: webView)
