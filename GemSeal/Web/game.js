@@ -492,7 +492,15 @@ function renderControls(){
  el('undo').disabled=!canUndo();
 }
 el('next').onclick=()=>{if(phase==='won')openLevel((level+1)%stages.length)};
-el('undo').onclick=undo;
+const undoButton=el('undo');
+undoButton.onclick=undo;
+undoButton.addEventListener('touchend',event=>{
+ if(!canUndo()||event.touches.length||event.changedTouches.length!==1)return;
+ const touch=event.changedTouches[0];
+ if(!undoButton.contains(document.elementFromPoint(touch.clientX,touch.clientY)))return;
+ event.preventDefault();
+ undo();
+},{passive:false});
 el('roundOver').addEventListener('cancel',event=>event.preventDefault());
 el('playAgain').onclick=()=>{el('roundOver').close();openLevel(0)};
 el('roundHome').onclick=()=>{el('roundOver').close();home()};
