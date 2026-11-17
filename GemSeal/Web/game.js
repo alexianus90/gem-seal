@@ -330,10 +330,25 @@ function celebrate(won,milestone){
  }
  celebrationFrame=requestAnimationFrame(draw);
 }
+function canUndo(){
+ return phase==='drag'?Boolean(gesture?.pendingStep):
+  Boolean(previous&&!gesture&&(phase==='play'||phase==='anim'));
+}
 function undo(){
- if(!previous||!['play','lost'].includes(phase)||gesture)return;
+ if(!canUndo())return;
+ clearTimeout(timer);
  stopCelebration();
- ({board,moves,left,selected}=previous);previous=null;phase='play';el('result').hidden=true;note('Last move undone.');render();
+ if(phase==='drag'){
+  clearDrag(gesture);
+ }else{
+  ({board,moves,left,selected}=previous);
+  previous=null;
+ }
+ phase='play';
+ el('result').hidden=true;
+ el('sealReward').hidden=true;
+ note('Last move undone.');
+ render();
 }
 function render(line,d,cleared=new Set()){
  el('stage').textContent=(level+1)+' / '+stages.length;
@@ -460,6 +475,7 @@ function releaseDrag(e,cancelled){
  }
  const step=!cancelled&&Math.abs(g.offset)>=Math.min(24,g.pitch*.38)?Math.sign(g.offset):0;
  const direction=g.horizontal?(step>0?'r':'l'):(step>0?'d':'u');
+ g.pendingStep=step;
  phase='drag';renderControls();
  const duration=matchMedia('(prefers-reduced-motion: reduce)').matches?0:190;
  for(const {clone} of g.copies)clone.style.transition='transform '+duration+'ms cubic-bezier(.22,.72,.25,1)';
@@ -473,7 +489,7 @@ function releaseDrag(e,cancelled){
 grid.onpointerup=e=>releaseDrag(e,false);
 grid.onpointercancel=grid.onlostpointercapture=e=>releaseDrag(e,true);
 function renderControls(){
- el('undo').disabled=!previous||phase!=='play';
+ el('undo').disabled=!canUndo();
 }
 el('next').onclick=()=>{if(phase==='won')openLevel((level+1)%stages.length)};
 el('undo').onclick=undo;
