@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Gem Seal</title>
-<link rel="icon" type="image/png" href="gem-seal-app-icon.png">
-<link rel="apple-touch-icon" href="gem-seal-app-icon.png">
+<link rel="icon" type="image/png" href="gem-seal-app-icon.png?v=aligned">
+<link rel="apple-touch-icon" href="gem-seal-app-icon.png?v=aligned">
 <style>
 *{box-sizing:border-box}body{margin:0;min-height:100svh;background:radial-gradient(ellipse at 50% 4%,#34244a,#151224 65%);color:#f9f4ff;font:15px system-ui;display:grid;place-items:center}main{width:min(100%,450px);padding:18px 15px}header,.stats,.tools{display:flex;align-items:center;justify-content:space-between;gap:8px}h1{font-size:clamp(31px,9vw,46px);margin:0;line-height:1;letter-spacing:-.07em}h1 span{color:#dfbbff}button{font:inherit;color:inherit;background:#2d243f;border:1px solid #58466c;border-radius:11px;min-height:44px;padding:8px 13px;font-weight:720;cursor:pointer}button:disabled{opacity:.42}button:focus-visible{outline:2px solid #f0ceff;outline-offset:2px}.stats{margin:16px 0 8px;color:#c9b9db;font-size:13px}.stats b{color:#fff}.arena{position:relative}.grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:5px;padding:7px;border:1px solid #8b6aac;border-radius:17px;background:#151020;box-shadow:0 15px 42px #09051490;touch-action:none}.tile{position:relative;aspect-ratio:1;min-height:0;padding:0;border:1px solid transparent;border-radius:9px;background:#271f37;display:grid;place-items:center;touch-action:none}.tile[data-piece=A]{background:linear-gradient(145deg,#8a55bc,#57357d);color:#f5d6ff}.tile[data-piece=B]{background:linear-gradient(145deg,#38796e,#23534e);color:#b7ffe4}.tile[data-piece=C]{background:linear-gradient(145deg,#a57240,#67452f);color:#ffdd9b}.tile[data-piece=D]{color:#fff0a4}.tile i{width:33%;aspect-ratio:1;border:2px solid currentColor;border-radius:30%;display:block}.tile[data-piece=B] i{border-radius:50%}.tile[data-piece=C] i{transform:rotate(45deg);border-radius:14%}.tile[data-piece=D] i{transform:rotate(45deg);background:#ffdb79;box-shadow:0 0 14px #ffcb62aa;border-radius:17%}.tile.pick{border-color:#fff}.tile.flash{animation:seal .38s both;z-index:1}.tile.slide{animation:slide .16s ease-out}.tools{margin-top:10px}.arrows{display:flex;gap:4px}.arrows button{min-width:38px;padding:6px}.message{min-height:2.9em;line-height:1.4;color:#e2cee9;margin:9px 0 0;font-size:13px}.help{font-size:12px;color:#bcaac9;margin:4px 0}.overlay{position:absolute;inset:0;display:grid;place-content:center;text-align:center;padding:20px;background:#170f25e8;border-radius:17px;z-index:3}.overlay[hidden]{display:none}.overlay h2{font-size:29px;margin:0}.overlay p{margin:9px 0 16px}.overlay button{background:#dfbbff;color:#2e1743;border-color:#f2d9ff}.overlay button+button{margin-top:6px;background:#362748;color:#fff;border-color:#6f5687}@keyframes seal{0%{box-shadow:inset 0 0 0 2px #fff}60%{transform:scale(1.08);filter:brightness(1.7)}100%{opacity:.2;transform:scale(.78)}}@keyframes slide{from{transform:translate(var(--sx),var(--sy))}to{transform:none}}@media(prefers-reduced-motion:reduce){.tile{animation:none!important}}
 
@@ -156,9 +156,84 @@ body{--page-base:#131329;--board-base:#262447;--tile-base:#3b3562;--accent:#bfb1
 #roundOver .menu-note{margin:0 0 7px}
 #playAgain small{display:block;font-size:11px;color:#d7cfe8;font-weight:550}
 #roundHome{border-color:transparent;background:transparent;color:#d7cfe8}
+/* Full-screen layout and Loop Drop palette */
+:root{
+ --safe-top:max(env(safe-area-inset-top),var(--native-safe-top,0px));
+ --safe-bottom:max(env(safe-area-inset-bottom),var(--native-safe-bottom,0px));
+ --page:#111d28;--board:#0b1720;--tile:#1b2e3a;
+ --ink:#edf6f6;--muted:#a6c2c6;--mint:#76e5c1;--amber:#ffca79;
+ --edge:#3c565f;--gutter:clamp(12px,4.1vw,20px)
+}
+body{
+ display:block;min-height:100svh;color:var(--ink);
+ font-family:-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
+ background:radial-gradient(ellipse 59% 76% at 50% 0%,#24414a 0%,var(--page) 82%);
+}
+main{width:min(100%,500px);margin-inline:auto;padding:0 var(--gutter)}
+.home{
+ min-height:100svh;display:flex;flex-direction:column;justify-content:center;
+ padding-block:calc(var(--safe-top) + 20px) calc(var(--safe-bottom) + 20px)
+}
+.home h1{font-weight:800;letter-spacing:-.055em}
+.home h1 span,.switch-row input:checked{color:var(--mint)}
+.home .primary,.menu-sheet .primary,#roundOver .primary,.overlay button{
+ background:var(--mint);color:#10332e;border-color:transparent
+}
+.home .primary{box-shadow:none}
+.home-secondary button,.menu-actions button{background:#edf6f60a;border-color:#a6c2c63b;color:var(--ink)}
+.home-progress strong,#roundLevel,#sealReward{color:var(--amber)}
+.home-progress,.moves-label,.message,#settings,.menu-note,.app-info small,
+.round-stats dt,#playAgain small,#roundHome{color:var(--muted)}
+.menu-sheet,#guide,#levelPicker,#adDemo,.overlay{
+ background:#1d333e;border-color:var(--edge);color:var(--ink)
+}
+.switch-row input:checked{background:var(--mint)}
+#game{
+ display:grid;grid-template-rows:auto auto minmax(min-content,1fr) auto auto;
+ min-height:100svh;padding-block:calc(var(--safe-top) + 12px) calc(var(--safe-bottom) + 12px)
+}
+.play-menu button{
+ width:44px;height:44px;border:0;border-radius:16px;padding:0;
+ background:#edf6f60a;color:var(--ink);font-size:22px;line-height:1
+}
+.stats{margin:4px 0 0;gap:4px}
+.stats-line{
+ color:var(--muted);font-size:10px;letter-spacing:.18em;text-transform:uppercase;
+ gap:16px;line-height:1.5
+}
+.stats-line b{color:var(--amber);font-weight:600}
+#moves{
+ color:var(--ink);font-size:clamp(36px,6.1svh,56px);line-height:1;
+ font-weight:750;letter-spacing:-.055em;font-variant-numeric:tabular-nums
+}
+.moves-label{font-size:10px;letter-spacing:.17em;font-weight:600}
+#game .arena{
+ align-self:center;justify-self:center;
+ width:min(100%,max(176px,calc(100svh - var(--safe-top) - var(--safe-bottom) - 220px)))
+}
+#game .grid{
+ width:100%;margin:0;padding:7px;gap:4px;border-radius:19px;
+ background:color-mix(in srgb,var(--board) 92%,var(--board-base));
+ border-color:var(--edge);box-shadow:none
+}
+#game .tile{border-radius:8px;border-color:transparent}
+#game .tile:not([data-piece=E],[data-piece=F],[data-piece=G]){
+ background:color-mix(in srgb,var(--tile) 89%,var(--tile-base));box-shadow:none
+}
+#game .tile.near-seal{box-shadow:inset 0 0 0 1px var(--amber)}
+#game .tile:focus-visible{outline-color:var(--mint)}
+.drag-track{background:#76e5c123}
+.tools{justify-content:flex-start;margin:0}
+.tools #undo{
+ display:grid;justify-items:center;gap:1px;min-width:60px;min-height:47px;padding:2px 0;
+ background:transparent;border:0;color:var(--muted);font-size:11px;font-weight:500
+}
+#undo span{font-size:29px;line-height:1}
+#undo:disabled{opacity:.37}
+.message{margin:4px 0 0;min-height:2.5em;font-size:12px;line-height:1.25;text-align:left}
 </style></head><body><main>
 <section id="home" class="home">
-<img class="logo seal-logo" src="gem-seal-app-icon.png" width="114" height="114" alt="">
+<img class="logo seal-logo" src="gem-seal-app-icon.png?v=aligned" width="114" height="114" alt="">
 <h1>Gem <span>Seal</span></h1><div class="home-progress">Puzzles cleared <strong id="homeCount">0 / 100</strong></div><button id="continue" class="primary"><span aria-hidden="true">▶</span> <span id="playLabel">Play</span></button><div class="home-secondary"><button id="levels">Levels</button><button id="how">How to play</button></div><button id="settings">⚙ Settings</button></section>
 <section id="game" hidden><header class="play-menu"><button id="playSettings" aria-label="Settings">☰</button></header>
 <div class="stats"><div class="stats-line"><b>Level <span id="stage"></span></b><span id="gems"></span></div><strong id="moves"></strong><span class="moves-label">Moves left</span></div>
@@ -178,7 +253,7 @@ body{--page-base:#131329;--board-base:#262447;--tile-base:#3b3562;--accent:#bfb1
 </dialog>
 <dialog id="moreSettings" class="menu-sheet" aria-labelledby="moreTitle">
 <div class="dialog-top"><h2 id="moreTitle">More Settings</h2><button id="backSettings" aria-label="Back to settings">×</button></div>
-<div class="app-info"><img class="logo seal-logo" src="gem-seal-app-icon.png" width="52" height="52" alt=""><div><strong>Gem Seal</strong><small>Web prototype</small></div></div>
+<div class="app-info"><img class="logo seal-logo" src="gem-seal-app-icon.png?v=aligned" width="52" height="52" alt=""><div><strong>Gem Seal</strong><small>Web prototype</small></div></div>
 <div class="menu-list"><button data-info="contact">Contact us</button><button data-info="support">Help &amp; support</button><button id="shareGame">Share with friends</button><button data-info="terms">Terms of use</button><button data-info="privacy">Privacy information</button><button data-info="about">About Gem Seal</button><button data-info="adPrivacy">Ad privacy choices</button><button data-info="adReport">Report an ad</button></div>
 </dialog>
 <dialog id="info" class="menu-sheet" aria-labelledby="infoTitle"><div class="dialog-top"><h2 id="infoTitle"></h2><button id="backMore" aria-label="Back to More Settings">×</button></div><p id="infoBody"></p><label id="shareField" hidden>Game link <input id="shareLink" readonly></label><button id="copyInfo" class="primary" hidden>Copy link</button><p id="copyStatus" role="status"></p></dialog>
