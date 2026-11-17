@@ -156,6 +156,27 @@ body{--page-base:#131329;--board-base:#262447;--tile-base:#3b3562;--accent:#bfb1
 #roundOver .menu-note{margin:0 0 7px}
 #playAgain small{display:block;font-size:11px;color:#d7cfe8;font-weight:550}
 #roundHome{border-color:transparent;background:transparent;color:#d7cfe8}
+/* Stretch the play screen and keep its controls inside the safe areas. */
+:root{
+ --game-safe-top:max(env(safe-area-inset-top),var(--native-safe-top,0px));
+ --game-safe-bottom:max(env(safe-area-inset-bottom),var(--native-safe-bottom,0px));
+}
+body:has(#game:not([hidden])) main{
+ width:min(100%,500px);padding:0 max(12px,env(safe-area-inset-right)) 0 max(12px,env(safe-area-inset-left));
+}
+#game{
+ display:grid;grid-template-rows:auto auto minmax(min-content,1fr) auto auto;
+ min-height:100svh;padding-block:calc(var(--game-safe-top) + 10px) calc(var(--game-safe-bottom) + 10px);
+}
+#game .stats{margin:3px 0 10px}
+#game .arena{
+ align-self:center;justify-self:center;
+ width:min(100%,max(176px,calc(100svh - var(--game-safe-top) - var(--game-safe-bottom) - 270px)));
+}
+#game .grid{width:100%;margin:0}
+#game .tools{margin-top:10px}
+#undo{min-width:104px;min-height:48px}
+#status{margin-bottom:0}
 </style></head><body><main>
 <section id="home" class="home">
 <img class="logo seal-logo" src="gem-seal-app-icon.png" width="114" height="114" alt="">
