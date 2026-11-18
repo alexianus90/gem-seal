@@ -139,7 +139,8 @@ private struct GameView: UIViewRepresentable {
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
             guard webView.alpha == 0 else { return }
             // The first visible frame should already have the saved progress, logo and safe-area layout.
-            webView.callAsyncJavaScript("""
+            Task { @MainActor in
+                _ = try? await webView.callAsyncJavaScript("""
                 \(safeAreaScript)
                 const logo = document.querySelector('#home .seal-logo');
                 await Promise.race([
@@ -149,10 +150,9 @@ private struct GameView: UIViewRepresentable {
                     })(),
                     new Promise(resolve => setTimeout(resolve, 350))
                 ]);
-                """, arguments: [:], in: nil, contentWorld: .page) { [weak self, weak webView] _ in
-                    guard let self, let webView else { return }
-                    self.reveal(webView)
-                }
+                """, arguments: [:], in: nil, contentWorld: .page)
+                reveal(webView)
+            }
         }
 
         func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
