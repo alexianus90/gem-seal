@@ -13,7 +13,7 @@ struct GemSealApp: App {
                 GameView(safeArea: geometry.safeAreaInsets)
                     .ignoresSafeArea()
             }
-            .background(Color(red: 10.0 / 255, green: 16.0 / 255, blue: 38.0 / 255))
+            .background(Color(red: 19.0 / 255, green: 19.0 / 255, blue: 41.0 / 255).ignoresSafeArea())
             .preferredColorScheme(.dark)
         }
     }
@@ -33,11 +33,14 @@ private struct GameView: UIViewRepresentable {
         webView.configuration.userContentController.addScriptMessageHandler(
             context.coordinator, contentWorld: .page, name: "gemSealServices"
         )
+        webView.alpha = 0
+        webView.accessibilityElementsHidden = true
         webView.isOpaque = false
         webView.backgroundColor = .clear
         webView.scrollView.backgroundColor = .clear
         webView.scrollView.bounces = false
         webView.scrollView.contentInsetAdjustmentBehavior = .never
+        context.coordinator.safeArea = safeArea
         if let page = Bundle.main.url(forResource: "index", withExtension: "html", subdirectory: "Web") {
             context.coordinator.gameURL = page.standardizedFileURL
             webView.loadFileURL(page, allowingReadAccessTo: page.deletingLastPathComponent())
@@ -134,14 +137,53 @@ private struct GameView: UIViewRepresentable {
         }
 
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-            applySafeArea(to: webView)
+            guard webView.alpha == 0 else { return }
+            // The first visible frame should already have the saved progress, logo and safe-area layout.
+            webView.callAsyncJavaScript("""
+                \(safeAreaScript)
+                const logo = document.querySelector('#home .seal-logo');
+                await Promise.race([
+                    (async () => {
+                        if (logo) await logo.decode().catch(() => {});
+                        await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+                    })(),
+                    new Promise(resolve => setTimeout(resolve, 350))
+                ]);
+                """, arguments: [:], in: nil, contentWorld: .page) { [weak self, weak webView] _ in
+                    guard let self, let webView else { return }
+                    self.reveal(webView)
+                }
+        }
+
+        func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+            reveal(webView)
+        }
+
+        func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
+            reveal(webView)
+        }
+
+        private func reveal(_ webView: WKWebView) {
+            guard webView.alpha == 0 else { return }
+            webView.accessibilityElementsHidden = false
+            if UIAccessibility.isReduceMotionEnabled {
+                webView.alpha = 1
+            } else {
+                UIView.animate(withDuration: 0.28, delay: 0, options: [.curveEaseOut, .allowUserInteraction]) {
+                    webView.alpha = 1
+                }
+            }
         }
 
         func applySafeArea(to webView: WKWebView) {
-            webView.evaluateJavaScript("""
+            webView.evaluateJavaScript(safeAreaScript, completionHandler: nil)
+        }
+
+        private var safeAreaScript: String {
+            """
                 document.documentElement?.style.setProperty('--native-safe-top', '\(Double(safeArea.top))px');
                 document.documentElement?.style.setProperty('--native-safe-bottom', '\(Double(safeArea.bottom))px');
-                """, completionHandler: nil)
+            """
         }
     }
 }
